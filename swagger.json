@@ -1,0 +1,699 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Documentação da API REST do frontoffice Angular",
+    "version": "1.0.0",
+    "title": "MarketPlace API",
+    "contact": {
+      "email": "admin@marketplace.pt"
+    }
+  },
+
+  "host": "localhost:3000",
+  "basePath": "/api",
+
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Autenticação do utilizador"
+    },
+    {
+      "name": "Products",
+      "description": "Produtos do marketplace"
+    },
+    {
+      "name": "Categories",
+      "description": "Categorias definidas pelo admin"
+    },
+    {
+      "name": "Supermarkets",
+      "description": "Supermercados do marketplace"
+    },
+    {
+      "name": "Favorites",
+      "description": "Produtos e supermercados favoritos"
+    },
+    {
+      "name": "Orders",
+      "description": "Encomendas realizadas"
+    },
+    {
+      "name": "Notifications",
+      "description": "Notificações dos utilizadores"
+    }
+  ],
+
+  "schemes": ["http"],
+
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login do utilizador",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Dados de login",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login efetuado"
+          },
+          "400": {
+            "description": "Credenciais inválidas"
+          }
+        }
+      }
+    },
+
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registar utilizador",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Conta criada"
+          },
+          "400": {
+            "description": "Erro de validação"
+          }
+        }
+      }
+    },
+
+    "/users/{id}": {
+      "put": {
+        "tags": ["Auth"],
+        "summary": "Atualizar utilizador",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilizador atualizado"
+          },
+          "400": {
+            "description": "Erro ao atualizar"
+          }
+        }
+      }
+    },
+
+    "/products": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Lista produtos",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Lista de produtos",
+            "schema": {
+              "$ref": "#/definitions/Product"
+            }
+          }
+        }
+      }
+    },
+
+    "/categories": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Lista categorias",
+        "responses": {
+          "200": {
+            "description": "Lista de categorias"
+          }
+        }
+      }
+    },
+
+    "/supermarkets": {
+      "get": {
+        "tags": ["Supermarkets"],
+        "summary": "Lista supermercados",
+        "responses": {
+          "200": {
+            "description": "Lista de supermercados"
+          }
+        }
+      }
+    },
+
+    "/supermarkets/{id}": {
+      "get": {
+        "tags": ["Supermarkets"],
+        "summary": "Detalhes do supermercado",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supermercado encontrado"
+          },
+          "404": {
+            "description": "Supermercado não encontrado"
+          }
+        }
+      }
+    },
+    "/supermarkets/{id}/favorite": {
+      "post": {
+        "tags": ["Favorites"],
+        "summary": "Adicionar supermercado aos favoritos",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supermercado adicionado"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Favorites"],
+        "summary": "Remover supermercado dos favoritos",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supermercado removido"
+          }
+        }
+      }
+    },
+
+    "/favorites": {
+      "get": {
+        "tags": ["Favorites"],
+        "summary": "Lista favoritos",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favoritos do utilizador"
+          }
+        }
+      }
+    },
+
+    "/products/{id}/favorite": {
+      "post": {
+        "tags": ["Favorites"],
+        "summary": "Adicionar produto aos favoritos",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto adicionado"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Favorites"],
+        "summary": "Remover produto dos favoritos",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Produto removido"
+          }
+        }
+      }
+    },
+
+    "/orders": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Criar encomenda",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Order"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Encomenda criada"
+          },
+          "400": {
+            "description": "Erro ao criar encomenda"
+          }
+        }
+      }
+    },
+
+    "/orders/ongoing": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Lista encomendas em progresso",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de encomendas"
+          }
+        }
+      }
+    },
+
+    "/orders/finished": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Histórico de encomendas",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de encomendas finalizadas"
+          }
+        }
+      }
+    },
+
+    "/orders/{id}/cancel": {
+      "put": {
+        "tags": ["Orders"],
+        "summary": "Cancelar encomenda",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Encomenda cancelada"
+          },
+          "400": {
+            "description": "Não é possível cancelar"
+          }
+        }
+      }
+    },
+
+    "/orders/count": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Número de encomendas",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Número de encomendas"
+          }
+        }
+      }
+    },
+
+    "/orders/{id}/payment": {
+      "put": {
+        "tags": ["Orders"],
+        "summary": "Criar pagamento Stripe",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "URL de pagamento criada"
+          },
+          "404": {
+            "description": "Encomenda não encontrada"
+          }
+        }
+      }
+    },
+
+    "/orders/api-payment-success/{id}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Confirmação do pagamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect para o frontoffice"
+          }
+        }
+      }
+    },
+
+    "/notifications": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Lista notificações",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista notificações"
+          }
+        }
+      }
+    },
+
+    "/notifications/read": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Marcar notificações como lidas",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notificações atualizadas"
+          }
+        }
+      }
+    },
+    "/notifications/{id}/read": {
+      "put": {
+        "tags": ["Notifications"],
+        "summary": "Marcar notificação como lida",
+        "security": [
+          {
+            "jwt_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notificação atualizada"
+          }
+        }
+      }
+    }
+  },
+
+  "securityDefinitions": {
+    "jwt_auth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization"
+    }
+  },
+
+  "definitions": {
+    "User": {
+      "type": "object",
+      "required": ["name", "email", "password"],
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "email": {
+          "type": "string"
+        },
+
+        "password": {
+          "type": "string"
+        },
+
+        "address": {
+          "type": "string"
+        },
+
+        "phoneNumber": {
+          "type": "string"
+        },
+
+        "role": {
+          "type": "string",
+          "enum": ["client", "supermarket", "courier", "admin"]
+        }
+      }
+    },
+
+    "Category": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+
+    "Product": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "price": {
+          "type": "number"
+        },
+
+        "stock": {
+          "type": "number"
+        },
+
+        "image": {
+          "type": "string"
+        }
+      }
+    },
+
+    "Supermarket": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "name": {
+          "type": "string"
+        },
+
+        "description": {
+          "type": "string"
+        },
+
+        "openingHours": {
+          "type": "string"
+        }
+      }
+    },
+
+    "Notification": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "title": {
+          "type": "string"
+        },
+
+        "message": {
+          "type": "string"
+        },
+
+        "seen": {
+          "type": "boolean"
+        }
+      }
+    },
+
+    "Order": {
+      "type": "object",
+
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+
+        "deliveryMethod": {
+          "type": "string"
+        },
+
+        "deliveryCost": {
+          "type": "number"
+        },
+
+        "totalValue": {
+          "type": "number"
+        },
+
+        "status": {
+          "type": "string",
+          "enum": [
+            "Pendente",
+            "Confirmada",
+            "Em processamento",
+            "Em entrega",
+            "Entregue",
+            "Cancelada"
+          ]
+        }
+      }
+    }
+  }
+}
