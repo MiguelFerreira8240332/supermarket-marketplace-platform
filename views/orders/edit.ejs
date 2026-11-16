@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Editar Estado da Encomenda</title>
+</head>
+
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1>Gerir Encomenda</h1>
+
+        <hr>
+
+        <div>
+            <p><strong>ID:</strong> <%= order._id %></p>
+            <p><strong>Cliente:</strong> <%= order.client.name %></p>
+            <p><strong>Total:</strong> <%= order.totalValue %> €</p>
+            <p><strong>Tipo de Entrega:</strong> <%= order.deliveryMethod %></p>
+                <%if (order.deliveryMethod === 'Entrega ao domicilio'){ %>
+                    <p>
+                        <strong>Morada de Entrega:</strong>
+                        <%if (order.client && order.client.address){ %>
+                            <%= order.client.address %>
+                        <% } else { %>
+                            <span class="text-danger">Não foi possivel encontrar a morada deste cliente.</span>
+                        <% } %>
+                    </p>
+                    <p>
+                        <strong>Numero de Telemovel:</strong>
+                        <%if (order.client && order.client.phoneNumber){ %>
+                            <%= order.client.phoneNumber %>
+                        <% } else { %>
+                            <span class="text-danger">Não foi possivel encontrar o contacto deste cliente.</span>
+                        <% } %>
+                    </p>
+                <% } %>
+        </div>
+
+        <hr>
+
+        <form action="/orders/updateStatus/<%= order._id %>" method="POST">
+            
+            <div>
+                <label>Estado da Encomenda:</label>
+                <select name="status" required>
+                    <option value="Pendente" <%= order.status === 'Pendente' ? 'selected' : '' %>>Pendente</option>
+                    <option value="Confirmada" <%= order.status === 'Confirmada' ? 'selected' : '' %>>Confirmada</option>
+                    <option value="Em processamento" <%= order.status === 'Em processamento' ? 'selected' : '' %>>Em processamento</option>
+                    <option value="Em entrega" <%= order.status === 'Em entrega' ? 'selected' : '' %>>Em entrega</option>
+                    <option value="Entregue" <%= order.status === 'Entregue' ? 'selected' : '' %>>Entregue</option>
+                    <option value="Cancelada" <%= order.status === 'Cancelada' ? 'selected' : '' %>>Cancelada</option>
+                </select>
+            </div>
+
+            <br>
+
+            <button type="submit" class="btn border">Atualizar Estado</button>
+            <a href="/orders/" class="btn border">Voltar</a>
+
+        </form>
+    </div>
+</body>
+</html>

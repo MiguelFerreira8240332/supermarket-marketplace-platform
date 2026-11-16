@@ -1,0 +1,45 @@
+<% if (typeof hideHeader === 'undefined' || !hideHeader) { %>
+
+<div class="sticky-top pt-3 d-flex justify-content-center mb-5">
+    <nav class="navbar glass-card shadow rounded-pill px-4 py-2">
+
+        <div class="d-flex align-items-center gap-5">
+            <a class="navbar-brand fw-bold m-0" href="/">
+                <i class="bi bi-basket"></i>
+                Marketplace
+            </a>
+
+            <% if (session && session.user) { %>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="d-flex align-items-center gap-2">
+                        <%= session.user.name %>
+                        <% if (session.user.role === 'admin') { %>
+                            <i class="bi bi-shield-lock"></i>
+                        <% } else if (session.user.role === 'supermarket') { %>
+                            <i class="bi bi-shop"></i>
+                        <% } else if (session.user.role === 'courier') { %>
+                            <i class="bi bi-bicycle"></i>
+                        <% } else { %>
+                            <i class="bi bi-person"></i>
+                        <% } %>
+                    </span>
+                    <a href="/" class="btn btn-outline-dark btn-sm rounded-pill">
+                        Início
+                    </a>
+
+                    <a href="/auth/logout" class="btn btn-outline-danger btn-sm rounded-pill">
+                        Logout
+                    </a>
+
+                </div>
+
+            <% } else { %>
+                <a href="/auth/login" class="btn btn-outline-primary btn-sm rounded-pill">
+                    Login
+                </a>
+            <% } %>
+
+        </div>
+    </nav>
+</div>
+<% } %>

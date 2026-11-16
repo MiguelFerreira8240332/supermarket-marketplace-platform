@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard Admin</title>
+</head>
+<%- include('../partials/layout') %>
+<style>li { margin-top: 12px };</style>
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1>Bem-vindo, <strong><%= session.user.name %></strong></h1>
+        <p>Perfil: Administrador</p>
+
+        <hr>
+
+        <%- include('stats') %>
+
+        <ul>
+            <li>
+                <a href="/admin/pendingSupermarkets" class="btn border">
+                    Supermercados pendentes 
+                    <span style="color: red">(<%= pendingSupermarkets %>)</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/products" class="btn border">Moderar produtos</a>
+            </li>
+
+            <li>
+                <a href="/admin/allUsers" class="btn border">
+                    Utilizadores (<%= totalUsers %>)
+                </a>
+            </li>
+
+            <li><a href="/categories" class="btn border">Gerir Categorias</a></li>
+            <li>
+                <a href="/admin/orders" class="btn border">Lista de encomendas</a>
+            </li>
+            <li>
+                <a href="/admin/user/view/<%= session.user._id %>" class="btn border">Informações pessoais</a>
+            </li>
+            <li>
+                <a href="/auth/logout" class="btn btn-outline-danger" onclick="return confirm('Tens a certeza que queres encerrar a sessão?');">Logout</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

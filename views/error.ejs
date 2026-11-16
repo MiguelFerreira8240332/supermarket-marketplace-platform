@@ -1,0 +1,42 @@
+<head>
+    <meta charset="utf-8">.
+</head>
+<%- include('partials/layout') %>
+
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1 style="max-width: 80%;"><%= message %></h1><br>
+
+        <div id="errorInfo" style="display: none; margin-top: 20px">
+            <h2><%= error.status %></h2>
+            <pre><%= error.stack %></pre>
+
+        </div>
+
+        <hr>
+        
+
+        <a href="<%= goback %>" class="btn border">Voltar</a>
+        <button id="toggleErrorInfo" class="btn border">Mostrar erro</button>
+        
+    </div>
+    <script>
+        const toggleButton = document.getElementById('toggleErrorInfo');
+        const errorDiv = document.getElementById('errorInfo')
+        let isVisible = false
+
+        toggleButton.addEventListener('click', function() {
+            if (isVisible) {
+                errorDiv.style.display = 'none'
+                toggleButton.innerHTML = "Mostrar erro"
+                isVisible = false
+            } else {
+                errorDiv.style.display = 'block'
+                toggleButton.innerHTML = "Esconder erro"
+                isVisible = true
+            }
+        })
+    </script> 
+
+</body>
+

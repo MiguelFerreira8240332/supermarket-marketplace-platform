@@ -1,0 +1,50 @@
+<%- include('../partials/layout') %>
+<style> label { margin:12px; } </style>
+
+<body class="d-flex justify-content-center align-items-center">
+
+    <div class="glass-card" style="width: 100%; max-width: 400px; text-align:center;">
+        <h2>Registo</h2>
+
+        <% if (typeof error !== 'undefined') { %>
+            <p style="color:red;"><%= error %></p>
+        <% } %>
+
+        <form action="/auth/signup" method="POST">
+            
+            <label>Nome:</label>
+            <input type="text" name="name" class="form-control" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" class="form-control" required>
+
+            <label>Password:</label>
+            <input type="password" name="password" class="form-control" required>
+
+            <label>Morada:</label>
+            <input type="text" name="address" class="form-control" required>
+
+            <label>Telefone (9 digitos):</label>
+            <input type="tel" name="phoneNumber" class="form-control" maxlength="9" pattern="[0-9]{9}" required>
+
+            <label>Tipo:</label>
+            <select name="role" class="form-control">
+                <option value="client">Cliente</option>
+                <option value="supermarket">Supermercado</option>
+                <option value="courier">Estafeta</option>
+            </select>
+
+            <br>
+
+            <button type="submit" class="btn border">Registar</button>
+        </form>
+
+        <hr>
+
+        <p>
+            Já tens conta? 
+            <a href="/auth/login" class="btn border">Entrar</a>
+        </p>
+    </div>
+
+</body>

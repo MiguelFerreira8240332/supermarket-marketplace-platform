@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Perfil do Estafeta</title>
+</head>
+
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+
+<div class="glass-card p-4">
+
+    <div class="d-flex justify-content-between align-items-center">
+
+        <!-- left -->
+        <div>
+
+            <!-- name and data of creation -->
+            <h2 class="fw-bold mb-1"><%= courier.name %></h2>
+            <small class="text-muted">
+                Registado em <%= new Date(courier.createdAt).toLocaleDateString() %>
+            </small>
+
+            <div class="mt-4">
+
+                <p class="mb-2">
+                    <span class="text-muted">Email</span><br>
+                    <strong><%= courier.email %></strong>
+                </p>
+
+                <p class="mb-2">
+                    <span class="text-muted">Telefone</span><br>
+                    <strong><%= courier.phoneNumber %></strong>
+                </p>
+
+                <p class="mb-2">
+                    <span class="text-muted">Morada</span><br>
+                    <strong><%= courier.address %></strong>
+                </p>
+
+            </div>
+        </div>
+
+        <!-- stats -->
+        <div class="d-flex flex-column gap-3">
+
+            <div class="glass-card p-3 text-center">
+                <h4 class="fw-bold mb-0"><%= stats.totalDeliveries %></h4>
+                <small class="text-muted">Total de entregas</small>
+            </div>
+
+            <div class="glass-card p-3 text-center">
+                <h4 class="fw-bold mb-0"><%= stats.monthDeliveries %></h4>
+                <small class="text-muted">Este mês</small>
+            </div>
+
+        </div>
+
+    </div>
+
+    <hr class="my-4">
+
+    <div class="d-flex">
+        <button onclick="history.back()" class="btn border">Voltar</button>
+        
+        <% if (typeof isOwner != 'undefined' && isOwner) { %>
+            <a href="/courier/settings" class="btn border" style="margin-left: 10px;">Editar</a>
+        <% } %>
+    </div>
+  
+
+</div>
+
+</body>
+</html>

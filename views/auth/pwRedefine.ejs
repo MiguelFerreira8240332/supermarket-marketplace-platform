@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redefinir password</title>
+
+</head>
+
+<%- include('../partials/layout') %>
+
+<body class="d-flex justify-content-center align-items-center">
+    <div class="glass-card" style="width: 100%; max-width: 400px; text-align: center; margin: 20px;">
+        <h2>Alterar password</h2>
+        
+        <p id="message"></p>
+
+        <form id="changePasswordForm" style="text-align: center;" autocomplete="off">
+            <label>Password antiga:</label>
+            <input type="password" name="password" id="old" class="form-control mb-3" required>
+
+            <label>Nova password:</label>
+            <input type="password" name="newPassword" id="new" class="form-control mb-3" required>
+
+
+            <button type="submit" class="btn border">Alterar</button>
+        </form>
+
+        <hr>
+
+        <button type="button" id="backBtn" class="btn border">Voltar</button>
+    </div>
+
+
+
+
+</body>
+
+<script>
+    document.getElementById("changePasswordForm").addEventListener("submit", async (e) => {
+        e.preventDefault()
+
+        const oldpw = document.getElementById("old").value
+        const newpw = document.getElementById("new").value
+        const message = document.getElementById("message")
+
+        message.style.color = "black"
+        message.textContent = "A carregar.."
+        try {
+            const res = await fetch("/auth/redefinePW", {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify( { oldpw, newpw } )
+            })
+
+            const data = await res.json()
+
+            if (res.ok) {
+                message.style.color = "green"
+                message.textContent = data.message || "Password alterada"
+            } else {
+                message.style.color = "red"
+                message.textContent = data.error || "Erro ao alterar password"
+            }
+
+        } catch (err) {
+            message.style.color = "red"
+            message.textContent = "Erro no servidor"
+            console.error(err)
+        }
+        
+        document.getElementById("old").value = ""
+        document.getElementById("new").value = ""
+    })
+
+    document.getElementById("backBtn").addEventListener('click', () => {
+        history.back()
+    })
+</script>
+</html>
+
+

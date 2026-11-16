@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+</head>
+<%- include('../partials/layout') %>
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1>Bem-vindo, <strong><%= session.user.name %></strong></h1>
+        <p>Perfil: Estafeta</p>
+
+        <hr>
+
+        <%- include('stats') %>
+        <br>
+
+        <ul>
+            <li> 
+                <a href="/courier/available" class="btn border"> 
+                    Entregas disponíveis 
+                    <% if (availableCount > 0) { %>
+                        <span style="color: green; font-weight: bold;">(<%= availableCount %>)</span>
+                    <% } else { %>
+                        <span>(<%= availableCount %>)</span>
+                    <% } %>
+                </a>
+            </li>
+
+            <br>
+
+            <li>
+                <a href="/courier/currentDeliveries" class="btn border">
+                    Entregas em andamento
+                    <% if (myDeliveriesCount > 0) { %>
+                        <span style="color:green; font-weight: bold;">(<%= myDeliveriesCount %>)</span>
+                    <% } else { %>
+                        <span>(<%= myDeliveriesCount %>)</span>
+                    <% } %>
+                </a>
+            </li>
+
+            <br>
+
+            <li> <a href="/courier/myDeliveries" class="btn border">Historico de entregas</a> </li> <br>
+
+            <li><a href="/courier/show/<%= session.user._id %>" class="btn border">Minhas informações</a></li> <br>
+
+            <li> <a href="/auth/logout" class="btn border">Logout</a> </li>
+        </ul>
+    </div>
+</body>
+</html>

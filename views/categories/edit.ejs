@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <title>Editar categoria</title>
+    </head>
+
+    <%- include('../partials/layout') %>
+    <body class="container mt-5">
+
+        <div class="glass-card">
+            <div class="form-group">
+                <form action="/categories/update/<%= category._id %>" method="POST">
+                    <label>Editar categoria:</label>
+                    <input class="form-control" type="text" name="name" value="<%= category.name %>"required>
+        
+                    <br>
+        
+                    <div class="d-flex gap-2 mt-3">
+                        <button class="btn btn-primary" type="submit">Enviar</button>
+                        <a href="/categories" class="btn border">Voltar</a>
+                    </div>
+                </form>    
+            </div>
+        </div>
+        
+    </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<html lang="pt">
+
+    <head>
+        <meta charset="utf-8">
+        <title>Criar categoria</title>
+    </head>
+    
+    <%- include('../partials/layout') %>
+    <body class="container mt-5">
+        <div class="glass-card">
+            <h1>Criar categoria</h1>
+
+            <a href="/categories" class="btn border">Voltar</a>           
+            <hr>
+    
+            <form action="/categories" method="POST">
+                <div>
+                    <label>Nome da categoria:</label>
+                    <input type="text" name="name" type="required">
+                </div>
+    
+                <button type="submit" class="btn border btn-glass">Guardar</button>
+            </form>
+        </div>
+       
+    </body>
+</html>

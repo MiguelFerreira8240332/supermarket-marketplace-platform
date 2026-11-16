@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <title>Lista de Encomendas</title>
+        <style>
+            .table, .table td, .table th {
+                background-color: transparent !important;
+                color: inherit !important;
+            }
+        </style>
+    </head>
+    <%- include('../partials/layout') %>
+    <body class="container mt-5">
+        <div class="glass-card">
+            <h1>Gestão de Encomendas</h1>
+
+            <div class="mb-2">
+                <a href="/orders/create" class="btn border">Nova Encomenda</a>
+                    <% 
+                    let backRoute = '/'; 
+                    if (typeof user !== 'undefined' && user) {
+                        if (user.role === 'supermarket') {
+                            backRoute = '/supermarket/dashboard';
+                        } else if (user.role === 'client') {
+                            backRoute = '/catalog';
+                        }
+                    }
+                %>
+
+                <a href="<%= backRoute %>" class="btn btn-secondary">Voltar</a>
+            </div>
+
+            <div class="glass-card mb-4">
+                <form action="/orders" method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Estado</label>
+                        <select name="status" class="form-select">
+                            <option value="">Todos os Estados</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Confirmada">Confirmada</option>
+                            <option value="Em processamento">Em processamento</option>
+                            <option value="Em entrega">Em entrega</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+            
+                    <div class="col-md-4">
+                        <label class="form-label">Tipo de Entrega</label>
+                        <select name="deliveryMethod" class="form-select">
+                            <option value="">Todos os Métodos</option>
+                            <option value="Levantamento em loja">Loja</option>
+                            <option value="Entrega ao domicilio">Domicílio</option>
+                        </select>
+                    </div>
+            
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                        <a href="/orders" class="btn btn-outline-secondary">Limpar</a>
+                    </div>
+                </form>
+            </div>
+
+            <hr>
+
+            <% 
+                const hasFilter = query && (query.status || query.deliveryMethod);
+            %>
+    
+            <% if (orders.length === 0) { %>
+                <div class="alert alert-light text-center border-dashed">
+                    <% if(hasFilter){ %>
+                        <p class="mb-0"><i class="bi bi-search"></i> Nenhuma encomenda corresponde aos filtros selecionados.</p>
+                        <a href="/orders" class="btn btn-sm btn-link">Limpar filtros</a>
+                    <% } else { %>
+                        <p class="mb-0">Ainda não foram efetuadas encomendas no sistema.</p>
+                    <% } %>
+                </div>
+            <% } else { %>
+                <table class="table table-borderless align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID Encomenda</th>
+                            <th>Cliente</th>
+                            <th>Total (€)</th>
+                            <th>Estado</th>
+                            <th>Tipo de Entrega</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>
+                                    <a href='/orders/show/<%= order._id %>' class="btn border btn-sm">
+                                        #<%= order._id.toString().substring(0, 7) %>...
+                                    </a>
+                                </td>
+                                <td><%= order.client ? order.client.name : 'N/A' %></td>
+                                <td><%= order.totalValue.toFixed(2) %> €</td>
+                                <td>
+                                    <% 
+                                        const statusColors = {
+                                            'Pendente': 'bg-warning text-dark',
+                                            'Confirmada': 'bg-primary',
+                                            'Em processamento': 'bg-info text-dark',
+                                            'Em entrega': 'bg-secondary',
+                                            'Entregue': 'bg-success',
+                                            'Cancelada': 'bg-danger'
+                                        };
+                                
+                                    let badgeClass = statusColors[order.status] || 'bg-light text-dark';
+                                    %>
+                                    <span class="badge <%= badgeClass %>">
+                                        <%= order.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <% if (order.deliveryMethod === 'Entrega ao domicilio') { %>
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-house-door"></i> Domicílio
+                                        </span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-shop"></i> Loja
+                                        </span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="/orders/edit/<%= order._id %>" class="btn border btn-sm">Gerir</a>
+                                        
+                                        <form action="/orders/delete/<%= order._id %>" method="POST" onsubmit="return confirm('Apagar registo permanentemente?')">
+                                            <button type="submit" class="btn border btn-sm text-danger">Eliminar</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>               
+                </table>
+            <% } %> 
+        </div> 
+    </body>
+</html>

@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Venda em Caixa</title>
+
+</head>
+
+<%- include('../partials/layout') %>
+
+    <style>
+        .productCard {
+            width: 160px;
+        }
+    </style>
+
+<body class="container mt-5" data-context="sale">
+<div class="glass-card">
+
+    <h1>Venda em caixa - <%= supermarket.name %></h1>
+
+    <a href="/orders" class="btn border">Ver encomendas</a>
+
+    <% 
+        let backRoute = '/'; 
+        if (typeof user !== 'undefined' && user) {
+            if (user.role === 'supermarket') {
+                backRoute = '/supermarket/dashboard';
+            } else if (user.role === 'client') {
+                backRoute = '/catalog';
+            }
+        }
+    %>
+
+    <a href="<%= backRoute %>" class="btn btn-secondary">Voltar</a>
+    
+    <hr>
+
+    <form action="/orders/create" method="POST">
+        
+        <input type="hidden" name="supermarket" value="<%= supermarket._id %>">
+        
+        <div class="row">
+            <!-- lado esquerdo: lista de produtos do supermercado -->
+             
+            <div class="col-md-9">
+
+                <div style="border: 1px solid #ccc; border-radius: 12px; padding: 30px;">
+                    <div class="productFilters">
+                        <div class="filterGroup">
+                            <label class="form-label">Nome:</label>
+                            <input type="text" class="form-control" id="name" oninput="loadProducts()">
+                        </div>
+                
+                        <div class="filterGroup">
+                            <label class="form-label">Categoria:</label>
+                            <select class="form-select" id="category" onchange="loadProducts()">
+                                <option value="">Todas</option>
+                                <% categories.forEach(cat => { %>
+                                    <option value="<%= cat._id %>"><%= cat.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+
+                        <input type="hidden" id="supermarket" value="<%= supermarket._id %>">
+                    </div><br>
+                    
+                         
+                    <div id="productsList" class="productsList"></div>
+                  
+
+                    <style>
+                        .productCard p {
+                            margin-top: -8px; gap: 15px;
+                        }
+                    </style>
+
+
+                </div>
+
+            </div>
+
+            <!-- lado direito -->
+            <div class="col-md-3">
+
+                <!-- cliente -->
+                <div>
+                    <label>Cliente:</label>
+                    <input type="text" id="clientSearch" class="form-control" placeholder="contacto ou email" required>
+                    
+                    <div id="clientResults"></div>
+                    <input type="hidden" name="client" id="clientId">
+
+                    <button class="btn border" type="button" onclick="openModal()">Criar cliente</button>
+
+                    <div id="modal" class="glass-card" style="margin-top: 10px; display: none">
+                        
+                            <h3>Novo cliente</h3>
+                            <input id="modalName" type="text" placeholder="Nome" required><br><br>
+                            <input id="modalEmail" type="email" placeholder="Email" required><br><br>
+                            <input 
+                                id="modalPhone"
+                                type="tel" 
+                                placeholder="Telefone (9 digitos)"
+                                pattern="[0-9]{9}"
+                                maxlength="9" 
+                                required><br><br>
+
+                            <button type="button" class="btn border" onclick="createClient()">Criar</button>
+                            <button  type="button" class="btn border" onclick="closeModal()">Cancelar</button>
+                    </div>
+                </div>
+
+                <br>
+
+                <!-- método de entrega -->
+                <div>
+                    <label>Método:</label>
+                    <select name="deliveryMethod" id="deliveryMethod" class="form-control">
+                        <option value="Levantamento em loja">Presencial</option>
+                        <option value="Entrega ao domicilio">Entrega</option>
+                    </select>
+                </div>
+
+                <br>
+
+                <!-- botão para concluir venda -->
+                <button type="submit" class="btn border" style="background:#28a745;color:white;">
+                    Finalizar venda
+                </button>
+
+                <hr>
+
+                <!-- carrinho dinamico -->
+                <div style="border:1px solid #ccc;padding:10px;border-radius:8px;">
+                    <div class="d-flex gap-3">
+                         <h4>Total: <span id="total">0.00</span> €</h4>
+
+                        <button type="button" class="btn border" id="clear-cart" style="display: none;" onclick="clearCart()">
+                            X
+                        </button>
+
+                    </div>
+                   
+
+                    <div id="cartItems"></div>
+                    
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="users-data" data-users='<%- JSON.stringify(users || []) %>'></div>
+
+<script>
+loadProducts()
+let cart = JSON.parse(localStorage.getItem("cart")) || {};
+render()
+
+
+const users = JSON.parse(
+    document.getElementById('users-data').dataset.users
+);
+
+// adicionar ao carrinho
+function addToCart(id, nome, preco, stock) {
+    if (!cart[id]) cart[id] = { id, nome, preco, qtd: 0, stock };
+
+    if (cart[id].qtd >= stock) return;
+
+    cart[id].qtd++;
+    render();
+}
+
+// atualizar / remover do carrinho
+function change(id, qtd) {
+    qtd = parseInt(qtd) || 0;
+
+    if (qtd <= 0) delete cart[id];
+    else cart[id].qtd = Math.min(qtd, cart[id].stock);
+
+    render();
+}
+
+// renderizar tudo
+function render() {
+    const items = Object.values(cart);
+    const el = document.getElementById('cartItems');
+
+    el.innerHTML = items.length
+        ? items.map(i => `
+            <hr>
+                ${i.nome} (${i.preco}€)
+                <input type="number" value="${i.qtd}" min="0" max="${i.stock}"
+                    onchange="change('${i.id}', this.value)" style="width:50px">
+                = ${(i.preco * i.qtd).toFixed(2)}€
+                <button class="btn button" onclick="change('${i.id}', 0)">X</button>
+            </div>
+        `).join("")
+        : "<p>Carrinho vazio</p>";
+
+    // hidden inputs (para o backend)
+    document.querySelectorAll('[name^="products"]').forEach(e => e.remove());
+
+    const form = document.querySelector('form');
+
+    items.forEach((i, idx) => { // colocar os dados no form pra ser acedido no backend
+        form.insertAdjacentHTML("beforeend", `
+            <input type="hidden" name="products[${idx}][productId]" value="${i.id}">
+            <input type="hidden" name="products[${idx}][amount]" value="${i.qtd}">
+        `);
+    });
+
+    let total = 0
+    items.forEach(i => { total += i.preco * i.qtd;});
+
+    document.getElementById("total").innerText = total.toFixed(2);
+
+    localStorage.setItem("cart", JSON.stringify(cart))
+
+    document.getElementById('clear-cart').style.display = items.length > 0 ? "block" : "none"
+}
+
+// cliente
+document.getElementById('clientSearch').addEventListener('input', function(e) {
+    const value = e.target.value.toLowerCase();
+    const results = document.getElementById('clientResults');
+
+    results.innerHTML = "";
+
+    let filtered;
+
+    if (!value) {
+        filtered = users;
+    } else {
+        filtered = users.filter(u =>
+            (u.email && u.email.toLowerCase().includes(value)) ||
+            (u.phoneNumber && u.phoneNumber.includes(value))
+        );
+    }
+
+    filtered.forEach((u, idx) => {
+        const div = document.createElement("div");
+        div.style.padding = "5px";
+        div.style.cursor = "pointer";
+        div.style.backdropFilter = idx % 2 === 0 ? 'blur(8px) saturate(1.2)' : 'transparent';
+        div.style.borderRadius = "12px";
+
+        div.innerHTML = `<strong>${u.name}</strong><br>(${u.phoneNumber || ''}, ${u.email || ''})`;
+
+        div.onclick = () => {
+            document.getElementById('clientSearch').value = u.name;
+            document.getElementById('clientId').value = u._id;
+            results.innerHTML = "";
+        };
+
+        results.appendChild(div);
+    });
+});
+
+document.querySelectorAll('.add-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        addToCart(this.dataset.id, this.dataset.name, this.dataset.price, this.dataset.stock)
+    })
+})
+
+function openModal() {
+    document.getElementById('modal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+}
+
+async function createClient() {
+
+    const name = document.getElementById('modalName');
+    const email = document.getElementById('modalEmail');
+    const phone = document.getElementById('modalPhone');
+
+    if (
+        !name.checkValidity() ||
+        !email.checkValidity() ||
+        !phone.checkValidity()
+    ) {
+        name.reportValidity();
+        email.reportValidity();
+        phone.reportValidity();
+        return;
+    }
+
+    const data = {
+        name: name.value,
+        email: email.value,
+        phoneNumber: phone.value,
+        password: "123456"
+    };
+
+    const res = await fetch('/users/findOrCreate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+        alert(result.error || "Erro ao criar cliente");
+        return;
+    }
+
+    if (result.created) {
+        alert("Cliente criado com sucesso!");
+    } else {
+        alert("Cliente já existia");
+    }
+
+    document.getElementById('clientId').value = result.user._id;
+    document.getElementById('clientSearch').value = result.user.name;
+
+    closeModal();
+}
+
+function clearCart() {
+    cart = {}; 
+    localStorage.removeItem("cart"); 
+    render();   
+}
+
+document.querySelector('form').addEventListener('submit', () => {
+    localStorage.removeItem("cart");
+});
+
+
+</script>
+
+</body>
+</html>

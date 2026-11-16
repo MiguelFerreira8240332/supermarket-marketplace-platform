@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Entregas em andamento</title>
+</head>
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+    <div class="glass-card">
+
+        <h1>Entregas em andamento</h1>
+
+        <a href="/courier/dashboard" class="btn border">Voltar</a>
+
+        <hr>
+
+        <%- include('../partials/orders/ordersTable', { orders: deliveries, actionType: 'current' }) %>
+
+    </div>
+</body>
+</html>

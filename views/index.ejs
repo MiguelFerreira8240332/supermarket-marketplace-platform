@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<%- include('partials/layout') %> 
+
+<body class="container mt-5">
+
+    <div class="glass-card sticky-top" style="width: fit-content; height: 20px; margin: 0 auto;">
+        <nav class="d-flex align-items-center" style="margin-top: -18px; display: flex; align-items: center; gap: 1rem;">
+            <h3 style="margin: 0;">Marketplace</h3>
+            <a href="" class="btn border" style="white-space: nowrap;">Login</a>
+            <a href="" class="btn border" style="white-space: nowrap;">Registar</a>
+        </nav>
+    </div>
+
+    <hr>
+
+    <div class="glass-card"> <h1><%= title %></h1>
+        <hr>
+        <ul class="list-unstyled d-flex flex-wrap gap-3"> 
+            <li>
+                <a href="/categories" class="btn border btn-glass">Gerir Categorias</a>
+            </li>
+
+            <li>
+                <a href="/products" class="btn border btn-glass">Gerir Produtos</a>
+            </li>
+
+            <li>
+                <a href="/orders" class="btn border btn-glass">Gerir Encomendas</a>
+            </li>
+
+            <li>
+                <a href="/supermarket/products" class="btn border btn-glass">Gerir Supermercados</a>
+            </li>
+
+            <li>
+                <a href="/user/admin/list" class="btn border btn-glass">Gerir Utilizadores</a>
+            </li>
+            
+            <li>
+                <a href="/user/profile" class="btn border btn-glass">O Meu Perfil</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

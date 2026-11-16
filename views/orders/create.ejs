@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Efetuar Encomenda</title>
+</head>
+
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+<div class="glass-card">
+    <div id="products-data" data-json='<%= JSON.stringify(products || []) %>'></div>
+    <div id="supermarkets-data" data-json='<%= JSON.stringify(supermarkets || []) %>'></div>
+
+    <h1>Nova Encomenda</h1>
+
+    <a href="/orders" class="btn border">Ver encomendas</a>
+    <hr>
+
+    <div id="products-data" data-json='<%= JSON.stringify(products || []) %>'></div>
+
+    <form action="/orders/create" method="POST">
+
+        <div>
+            <label>Cliente ID:</label>
+            <input type="text" name="client" value="65f1a2b3c4d5e6f7a8b9c0d1" required>
+        </div>
+        <br>
+
+        <div>
+            <label>Supermercado:</label>
+            <select name="supermarket" required>
+                <% if (supermarkets.length === 0) { %>
+                    <option value="">Nenhum supermercado disponível</option>
+                <% } else { %>
+                    <option value="">Escolher supermercado:</option>
+                    <% supermarkets.forEach(market => { %>
+                        <option value="<%= market._id %>"><%= market.name %></option>
+                    <% }) %>
+                <% } %>
+            </select>
+        </div>
+        <br>
+
+        <div style="border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+            <h3>Carrinho</h3>
+
+            <div id="products-container"></div>
+
+            <button type="button" onclick="addProduct()">+ Adicionar Produto</button>
+        </div>
+        <br>
+
+        <div>
+            <label>Método de Entrega:</label>
+            <select name="deliveryMethod" id="deliveryMethod" required>
+                <option value="Levantamento em loja">Levantamento em loja</option>
+                <option value="Entrega ao domicilio">Entrega ao domicilio</option>
+            </select>
+        </div>
+        <br>
+
+        <h3>Total: <span id="total">0</span> €</h3>
+        <br>
+
+        <button type="submit" id="submit-btn" class="btn border" style="background-color: #6772e5; color: white;">
+            Confirmar e Pagar com Stripe
+        </button>
+
+    </form>
+</div>
+
+<script>
+    // Carregar dados iniciais
+    const productsData = JSON.parse(document.getElementById('products-data').getAttribute('data-json'));
+    const supermarketsData = JSON.parse(document.getElementById('supermarkets-data').getAttribute('data-json'));
+
+    let index = 0;
+
+    function addProduct() {
+        const container = document.getElementById("products-container");
+        const div = document.createElement("div");
+        div.classList.add("product-item");
+        div.style.marginBottom = "15px";
+        div.style.padding = "10px";
+        div.style.border = "1px solid #ccc";
+        div.style.borderRadius = "8px";
+
+        let options = `<option value="">Selecionar Produto:</option>`;
+        productsData.forEach(prod => {
+            options += `<option value="${prod._id}" data-price="${prod.price}" data-stock="${prod.stock}">
+                            ${prod.name} (Stock: ${prod.stock}) - €${prod.price}
+                        </option>`;
+        });
+
+        div.innerHTML = `
+            <label>Produto:</label>
+            <select name="products[${index}][productId]" class="product-select" required>
+                ${options}
+            </select>
+            <label>Quantidade:</label>
+            <input type="number" name="products[${index}][amount]" class="amount" min="1" value="1" required>
+            <p>Preço do Item: <span class="item-price">0.00</span> €</p>
+            <button type="button" class="remove-btn">Remover</button>
+        `;
+
+        container.appendChild(div);
+        div.querySelector(".remove-btn").addEventListener("click", () => { div.remove(); updateTotal(); });
+        index++;
+        updateTotal();
+    }
+
+    function updateTotal() {
+        let subtotalProdutos = 0;
+
+        document.querySelectorAll(".product-item").forEach(item => {
+            const select = item.querySelector(".product-select");
+            const amountInput = item.querySelector(".amount");
+            const priceDisplay = item.querySelector(".item-price");
+            
+            const selectedOption = select.selectedOptions[0];
+            const price = parseFloat(selectedOption?.dataset.price || 0);
+            const amount = parseInt(amountInput.value || 0);
+            
+            const itemTotal = price * amount;
+            priceDisplay.innerText = itemTotal.toFixed(2); 
+            subtotalProdutos += itemTotal;
+        });
+
+        let totalFinal = subtotalProdutos;
+        const selectedMarketId = document.querySelector('select[name="supermarket"]').value;
+        const deliveryMethod = document.getElementById("deliveryMethod").value;
+        
+        const market = supermarketsData.find(m => m._id === selectedMarketId);
+
+        if (market && market.deliveryCosts) {
+            const extra = (deliveryMethod === "Entrega ao domicilio") 
+                ? parseFloat(market.deliveryCosts.courier || 0) 
+                : parseFloat(market.deliveryCosts.pickup || 0);
+            
+            totalFinal += extra;
+        }
+
+        document.getElementById("total").innerText = totalFinal.toFixed(2);
+        updateButtonBehavior();
+    }
+
+    function updateButtonBehavior() {
+        const method = document.getElementById("deliveryMethod").value;
+        const btn = document.getElementById("submit-btn");
+        if (method === "Entrega ao domicilio") {
+            btn.innerText = "Confirmar e Pagar com Stripe";
+            btn.style.backgroundColor = "#6772e5";
+        } else {
+            btn.innerText = "Confirmar Encomenda";
+            btn.style.backgroundColor = "#28a745"; 
+        }
+    }
+
+    document.addEventListener("change", (e) => {
+        if (e.target.classList.contains('product-select') || 
+            e.target.id === 'deliveryMethod' || 
+            e.target.name === 'supermarket') {
+            updateTotal();
+        }
+    });
+
+    document.addEventListener("input", (e) => {
+        if (e.target.classList.contains('amount')) {
+            updateTotal();
+        }
+    });
+
+    addProduct();
+</script>
+
+</body>
+</html>

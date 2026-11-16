@@ -1,0 +1,76 @@
+<div class="p-3 d-flex justify-content-center mt-3">
+    <% if (stats.totalReviews > 0) { %>
+        <a 
+            href="/courier/<%= courier._id %>/reviews"
+            class="text-decoration-none text-reset"
+        >
+
+            <div class="d-flex gap-2">
+                <h2 class="mb-0">
+                    <i class="bi bi-star">
+                    </i><%= stats.averageRating %>/5
+                </h2>
+
+                <small class="text-muted"><%= stats.totalReviews %> avaliações</small>
+            </div>
+        </a>
+    <% } else { %>
+        <a 
+            href="/courier/<%= courier._id %>/reviews"
+            class="text-decoration-none"
+        >
+            <i class="bi bi-star"></i>Ainda sem avaliações
+    </a>
+    <% } %>
+</div>
+
+<div class="row g-4 mt-0 justify-content-center">
+
+    <div class="col-auto">
+        <div class="glass-card h-100 p-3 text-center">
+            <h5><b>Entregas</b></h5>
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <p>📦<br>Total: <%= stats.totalDeliveries %></p>
+                <div>
+                    <small>Este mês:</small>
+                    <h2><%= stats.monthDeliveries %></h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-auto">
+        <div class="glass-card justify-content-center h-100 p-3">
+            <h5 class="text-center"><b>📍 Hubs frequentes</b></h5>
+            <div class="mt-2">
+                <% if (stats.topSupermarkets.length) { %>
+                    <% stats.topSupermarkets.forEach((s, i) => { %>
+                        <p class="mb-1">
+                            <b>#<%= i + 1 %></b>
+                            <a href="/supermarket/show/<%= s.id %>" class="btn border">
+                                <%= s.name %>
+                            </a>
+                            (<%= s.count %> entregas)
+                        </p>
+                    <% }) %>
+                <% } else { %>
+                    <p class="small text-center">Sem histórico de entregas.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-auto">
+        <div class="glass-card justify-content-center h-100 w-100 p-3 text-center">
+            <h5><b>Ganhos</b></h5>
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <p>💴<br>Total: <%= stats.totalEarnings.toFixed(2) %>€</p>
+                <div>
+                    <small>Este mês:</small>
+                    <h2><%= (stats.monthEarnings || 0).toFixed(2) %>€</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

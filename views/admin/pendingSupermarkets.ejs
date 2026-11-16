@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Supermercados Pendentes</title>
+</head>
+<%- include('../partials/layout') %>
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1>Supermercados Pendentes</h1>
+
+        <a href="/admin/dashboard" class="btn border">Voltar</a>
+
+        <hr>
+
+        <% if (supermarkets.length === 0) { %>
+            <p>Não existem supermercados pendentes.</p>
+        <% } else { %>
+            <table class="table table-borderless">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Morada</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% supermarkets.forEach(market => { %>
+                        <tr>
+                            <td><%= market.name %></td>
+                            <td><%= market.description %></td>
+                            <td><%= market.location?.address || '-' %></td>
+                            <td>
+                                <form action="/admin/supermarkets/approve/<%= market._id %>" method="POST">
+                                    <button type="submit" class="btn border">Aprovar</button>
+                                </form>
+                                
+                                <button 
+                                    type="button" 
+                                    class="btn btn-danger 
+                                    btn-sm" data-bs-toggle="modal" 
+                                    data-bs-target="#modalRejeitar"
+                                    onclick="prepararRejeicao('<%= market._id %>', '<%= market.name %>')"> 
+                                    Rejeitar
+                                </button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
+
+    <div class="modal fade" id="modalRejeitar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formRejeitar" action="" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Rejeitar Supermercado: <span id="nomeLojaModal"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Indique o motivo da rejeição:</label>
+                            <textarea name="reason" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <p class="text-muted small">Esta mensagem ficará visível para o proprietário do supermercado ao fazer login.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Enviar Rejeição</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function prepararRejeicao(id, nome) {
+            document.getElementById('nomeLojaModal').innerText = nome;
+
+            const form = document.getElementById('formRejeitar');
+            form.action = '/admin/supermarkets/reject/' + id;
+        }
+    </script>
+    
+</body>
+</html>

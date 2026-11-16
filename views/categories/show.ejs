@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="utf-8">
+        <title>Categoria de produto</title>
+    </head>
+    
+    <%- include('../partials/layout') %>
+    <body class="container mt-5">
+        <div class="glass-card">
+            <h1>Detalhes da categoria</h1>
+            <p style="margin-top: 21px;"><strong>Nome:</strong> <%= category.name %></p>
+
+            <hr>
+    
+            <a href="/categories" class="btn border">Lista de categorias</a>
+        </div>
+    </body>
+</html>

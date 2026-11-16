@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title>Histórico de entregas</title>
+</head>
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+    <div class="glass-card">
+
+        <h1>Histórico de entregas</h1>
+        <hr>
+
+       <select id="status" class="form-select" onchange="loadDeliveries()">
+            <option value="">Todos</option>
+            <option value="Entregue">Entregue</option>
+            <option value="Cancelada">Cancelada</option>
+       </select>
+
+       <br>
+
+       <div id="deliveriesContainer">
+            <%- include('../partials/orders/ordersTable', { orders, actionType: 'none'}) %>
+       </div>
+
+       <hr>
+
+       <a href="/courier/dashboard" class="btn border">Voltar</a> 
+    </div>
+
+    <script>
+        function loadDeliveries() {
+            var status = document.getElementById("status").value
+            var container = document.getElementById("deliveriesContainer")
+
+            container.innerHTML = "A carregar..."
+
+            var xhttp = new XMLHttpRequest()
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    container.innerHTML = this.responseText;
+                }
+            } 
+
+            xhttp.open("GET", "/courier/api/myDeliveries?status=" + status, true)
+            xhttp.send()
+    }
+    </script>
+</body>
+</html>

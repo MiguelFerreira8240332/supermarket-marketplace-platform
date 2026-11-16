@@ -1,0 +1,62 @@
+<div class="row g-4 mt-3 justify-content-center">
+
+    <!-- crescimento -->
+    <div class="col-auto">
+        <div class="glass-card h-100 p-3 text-center">
+            <h5><b>Crescimento</b></h5>
+            <div>
+                <% if (stats.growth > 0) { %>
+                    <h2 class="text-success">▲ <%= stats.growth.toFixed(1) %>%</h2>
+                <% } else { %>
+                    <h2 class="text-muted">0%</h2>
+                <% } %>
+                <small>vs mês passado</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- top eestafetas -->
+    <div class="col-auto">
+        <div class="glass-card h-100 p-3">
+            <h5 class="text-center"><b>🚚 Top estafetas</b></h5>
+            <div class="mt-2">
+                <% if (stats.topCouriers.length) { %>
+                    <% stats.topCouriers.forEach((c, i) => { %>
+                        <p class="mb-1 text-center">
+                            <b>#<%= i + 1 %></b> 
+                            <a href="/courier/show/<%= c.id %>" class="btn border">
+                                <%= c.name %>
+                            </a>
+                            (<%= c.total %> entregas)
+                        </p>
+                    <% }) %>
+                <% } else { %>
+                    <p class="small text-center">Sem dados.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- top supermercados -->
+    <div class="col-auto">
+        <div class="glass-card h-100 p-3">
+            <h5 class="text-center"><b>🏪 Top supermercados</b></h5>
+            <div class="mt-2">
+                <% if (stats.topSupermarkets.length) { %>
+                    <% stats.topSupermarkets.forEach((s, i) => { %>
+                        <p class="mb-1 text-center">
+                            <b>#<%= i + 1 %></b> 
+                            <a href="/supermarket/show/<%= s._id || s.id %>" class="btn border">
+                                <%= s.name %>
+                            </a>
+                            (<%= s.total %> vendas)
+                        </p>
+                    <% }) %>
+                <% } else { %>
+                    <p class="small text-center">Sem dados</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+</div>

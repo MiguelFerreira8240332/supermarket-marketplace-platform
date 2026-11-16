@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+</head>
+<%- include('../partials/layout') %>
+
+<body class="container mt-5">
+    <div class="glass-card">
+        <h1>Entregas disponíveis</h1>
+
+        <a href="/courier/dashboard" class="btn border">Voltar</a>
+
+        <hr>
+
+        <% if (typeof activeDeliveries !== 'undefined') { %>
+            <div class="alert alert-danger">
+                <%= activeDeliveries %>
+            </div>
+        <% } %>
+
+        <%- include('../partials/orders/ordersTable', { 
+            orders: deliveries,
+            actionType: 'available' 
+        }) %>
+
+    </div>
+</body>
+</html>
